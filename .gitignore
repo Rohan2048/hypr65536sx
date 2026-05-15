@@ -1,0 +1,6 @@
+.config/eww/icons/*.png
+.config/eww/icons/.app_cache.tsv
+.config/eww/icons/.last_scan
+.config/eww/shortcuts.json
+.config/gtk-3.0/bookmarks
+.cache/

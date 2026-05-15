@@ -1,0 +1,703 @@
+@import '/home/rohan/.cache/wal/eww-colours.scss';
+@import "shortcuts";
+@import "commands";
+@import "music-bar";
+@import "calendar";
+// --------------------------
+// SHARED
+// --------------------------
+
+* {
+  font-family: "Satoshi Variable";
+}
+
+.bar {
+  color: $foreground;
+  font-size: 7px;
+  font-family: "Satoshi Variable";
+  padding: 3px 7px;
+  font-weight: bold;
+}
+
+// All windows transparent — background lives on widgets
+window {
+  background-color: transparent;
+}
+
+.power-btn,
+.app,
+.popup-mute-btn,
+.profile-btn,
+.profile-btn-active {
+  background-color: transparent;
+  border: 1px solid $color8;
+  border-radius: 6px;
+}
+
+.app:hover,
+.popup-mute-btn:hover,
+.profile-btn:hover,
+.profile-btn-active:hover {
+  border: 1px solid $color1;
+}
+
+.power-btn,
+.power-btn:hover,
+.power-btn:focus,
+.power-btn:active {
+  border: none;
+  outline: none;
+  box-shadow: none;
+}
+
+.power-btn:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+// Only apply generic button label style to non-active buttons
+button:not(.cal-btn):not(.device-connected):not(.gov-active):not(.sink-btn-active):not(.toggle-on) label {
+  color: $foreground;
+  font-family: "Satoshi Variable";
+  font-weight: bold;
+}
+
+.cal-btn {
+  background: transparent;
+  border: none;
+  padding: 0 4px;
+  min-height: 0;
+  &:hover { background: rgba(255,255,255,0.06); border-radius: 6px; }
+  &:active, &:focus { background: transparent; box-shadow: none; }
+}
+
+.tray {
+  color: $foreground;
+  font-size: 13px;
+  font-family: "Satoshi Variable";
+  font-weight: bold;
+}
+
+// --------------------------
+// BOTTOM BAR
+// --------------------------
+
+.bar {
+  background-color: rgba(0,0,0, 0.3);
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px 12px 0 0;
+}
+
+
+// --------------------------
+// BAR TIME & DATE
+// --------------------------
+
+.bar-time {
+  color: $foreground;
+  font-size: 11px;
+  font-family: "Satoshi Variable";
+  font-weight: bold;
+  margin: 0;
+  padding: 0;
+  min-height: 0;
+}
+
+.bar-date {
+  color: $color3;
+  font-size: 9px;
+  font-family: "Satoshi Variable";
+  font-weight: bold;
+  margin: 0;
+  padding: 0;
+  min-height: 0;
+}
+// --------------------------
+// POWER BUTTON
+// --------------------------
+
+.power-btn {
+  border-radius: 5px;
+  font-family: "Satoshi Variable";
+  font-weight: bold;
+  padding: 0px 6px;
+}
+
+.power-btn label {
+  font-size: 13px;
+}
+
+
+// --------------------------
+// CONTROL ICONS
+// --------------------------
+
+.control-icon {
+  background-color: transparent;
+  border: none;
+  border-radius: 6px;
+  padding: 2px 7px;
+  min-width: 0;
+  min-height: 0;
+}
+
+.control-icon:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.control-icon label {
+  color: $foreground;
+  font-size: 13px;
+}
+
+.wifi-icon {
+  margin-right: -5px;
+}
+
+// --------------------------
+// ICON BUTTONS
+// --------------------------
+
+.icon-btn {
+  background-color: transparent;
+  border: none;
+  border-radius: 6px;
+  padding: 2px 4px;
+}
+
+.icon-btn:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+// --------------------------
+// TRAY
+// --------------------------
+
+.tray-section {
+  border: none;
+}
+
+.tray-btn-compact {
+  background-color: transparent;
+  border: none;
+  border-radius: 6px;
+  padding: 0px;
+  min-width: 16px;
+  min-height: 16px;
+}
+
+.tray-btn-compact:hover {
+  border: 1px solid $color1;
+}
+
+// --------------------------
+// POPUPS
+// --------------------------
+
+.popup-box {
+  background-color: rgba(0, 0, 0, 0.35);
+  border: 1px solid $color8;
+  border-radius: 12px;
+  padding: 10px;
+}
+
+window.notifications-popup .popup-box {
+  padding: 8px;
+}
+
+window.notifications-popup > * {
+  background-color: transparent;
+}
+
+.scroll-box {
+  margin-top: 0;
+  padding-top: 0;
+}
+
+.popup-title {
+  color: $foreground;
+  font-size: 13px;
+  font-family: "Satoshi Variable";
+  font-weight: bold;
+}
+
+.popup-section-title {
+  color: $color8;
+  font-size: 10px;
+  font-weight: bold;
+  font-family: "Satoshi Variable";
+}
+
+.popup-icon {
+  font-size: 15px;
+  min-width: 20px;
+}
+
+.popup-mute-btn {
+  padding: 2px 6px;
+}
+
+.popup-mute-btn label {
+  font-size: 13px;
+  font-family: "Satoshi Variable";
+  font-weight: bold;
+}
+
+.popup-device-active {
+  color: $color7;
+  font-size: 12px;
+  font-family: "Satoshi Variable";
+  font-weight: bold;
+}
+
+// --------------------------
+// SINK LIST BUTTONS
+// --------------------------
+
+.sink-btn {
+  background-color: transparent;
+  border: 1px solid $color8;
+  border-radius: 6px;
+  padding: 4px 8px;
+  min-height: 0;
+}
+
+.sink-btn:hover {
+  border-color: $color1;
+  background-color: rgba(255, 255, 255, 0.06);
+
+}
+
+.sink-btn label {
+  color: $foreground;
+  font-size: 12px;
+  font-family: "Satoshi Variable";
+  font-weight: bold;
+
+}
+
+.sink-btn-active {
+  background-color: $color3;
+  border: 1px solid $color3;
+  border-radius: 6px;
+  padding: 4px 8px;
+  min-height: 0;
+
+}
+
+.sink-btn-active label {
+  color: #000000;
+  font-size: 12px;
+  font-family: "Satoshi Variable";
+  font-weight: bold;
+  transition: all 200ms ease;
+}
+
+.sink-btn-active:hover {
+  border-color: $color1;
+  background-color: $color1;
+  transition: all 200ms ease;
+}
+
+
+// --------------------------
+// PROFILE / NETWORK BUTTONS
+// --------------------------
+
+.profile-btn {
+  padding: 4px 8px;
+}
+
+.profile-btn label {
+  color: $foreground;
+  font-size: 13px;
+  font-family: "Satoshi Variable";
+  font-weight: bold;
+  transition: all 200ms ease;
+}
+
+.profile-btn-active {
+  border: 1px solid $color1;
+  border-radius: 6px;
+  padding: 4px 8px;
+  transition: all 200ms ease;
+}
+
+.profile-btn-active label {
+  color: $color1;
+  font-size: 13px;
+  font-family: "Satoshi Variable";
+  font-weight: bold;
+  transition: all 200ms ease;
+}
+
+// --------------------------
+// SLIDERS
+// --------------------------
+
+.popup-slider trough,
+scale trough {
+  background-color: $color1;
+  border-radius: 4px;
+  min-height: 4px;
+  min-width: 140px;
+  font-family: "Satoshi Variable";
+  font-weight: bold;
+}
+
+.popup-slider trough highlight,
+scale trough highlight {
+  background-color: $color3;
+  border-radius: 4px;
+  font-family: "Satoshi Variable";
+  font-weight: bold;
+}
+
+.popup-slider slider,
+scale slider {
+  background-color: $foreground;
+  border-radius: 50%;
+  min-width: 12px;
+  min-height: 12px;
+  font-family: "Satoshi Variable";
+  font-weight: bold;
+}
+
+// --------------------------
+// NOTIFICATIONS
+// --------------------------
+
+.notif-entry {
+  padding: 4px 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  transition: all 200ms ease;
+}
+
+.notif-text {
+  color: $foreground;
+  font-size: 14px;
+  font-family: "Satoshi Variable";
+  font-weight: bold;
+  margin: 0;
+  padding: 0;
+}
+
+window.notifications-popup scroll,
+window.notifications-popup viewport {
+  margin: 0;
+  padding: 0;
+}
+
+window.notifications-popup scroll > *,
+window.notifications-popup viewport > box {
+  margin: 0;
+  padding: 0;
+}
+
+window.notifications-popup * {
+  min-height: 0;
+}
+
+window.notifications-popup box label.popup-title {
+  font-size: 24px;
+  margin: 0;
+  padding: 0;
+}
+
+window.notifications-popup box .popup-mute-btn label {
+  font-size: 18px;
+  margin: 0;
+  padding: 0;
+}
+
+window.notifications-popup box .popup-mute-btn {
+  margin: 0;
+  padding: 4px 10px;
+}
+
+// --------------------------
+// WIFI POPUP ENTRIES
+// --------------------------
+
+.wifi-entry {
+  border-radius: 6px;
+  padding: 2px 8px;
+  border: 1px solid $color8;
+  background-color: transparent;
+  transition: all 200ms ease;
+}
+
+.wifi-entry label {
+  color: $foreground;
+  opacity: 0.7;
+  font-family: "Satoshi Variable";
+  font-weight: bold;
+  transition: all 200ms ease;
+}
+
+.wifi-entry:hover {
+  border-color: $color1;
+  opacity: 1;
+  transition: all 200ms ease;
+}
+
+// --------------------------
+// BLUETOOTH POPUP ENTRIES
+// --------------------------
+
+.bt-entry {
+  border-radius: 6px;
+  padding: 2px 8px;
+  border: 1px solid $color8;
+  background-color: transparent;
+  transition: all 200ms ease;
+}
+
+.bt-entry label {
+  color: $foreground;
+  opacity: 0.7;
+  font-family: "Satoshi Variable";
+  font-weight: bold;
+  transition: all 200ms ease;
+}
+
+.bt-entry:hover {
+  border-color: $color1;
+  opacity: 1;
+  transition: all 200ms ease;
+}
+
+// --------------------------
+// CONNECTED DEVICE HIGHLIGHT
+// --------------------------
+
+.device-connected {
+  border-radius: 6px;
+  padding: 2px 8px;
+  border: 1px solid $color3;
+  background-color: $color3;
+  transition: all 200ms ease;
+}
+
+.device-connected label {
+  color: #000000;
+  opacity: 1;
+  font-family: "Satoshi Variable";
+  font-weight: bold;
+  transition: all 200ms ease;
+}
+
+.device-connected:hover {
+  background-color: $color1;
+  border-color: $color1;
+  transition: all 200ms ease;
+}
+
+.popup-disconnect-btn,
+.popup-forget-btn {
+  background-color: transparent;
+  border: 1px solid $color8;
+  border-radius: 6px;
+  padding: 2px 6px;
+}
+
+.popup-disconnect-btn:hover {
+  border-color: $color1;
+}
+
+.popup-forget-btn:hover {
+  border-color: red;
+}
+
+.popup-disconnect-btn label,
+.popup-forget-btn label {
+  font-size: 12px;
+  font-family: "Satoshi Variable";
+  font-weight: bold;
+}
+
+// --------------------------
+// TOGGLE PILL BUTTON
+// --------------------------
+
+.toggle-btn {
+  border-radius: 20px;
+  padding: 4px 14px;
+  min-width: 80px;
+  border: 1px solid $color8;
+  background-color: transparent;
+  transition: all 200ms ease;
+}
+
+.toggle-btn:hover {
+  border-color: $color1;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.toggle-on {
+  background-color: $color3;
+  border-color: $color3;
+}
+
+.toggle-on:hover {
+  background-color: $color1;
+  border-color: $color1;
+}
+
+.toggle-off {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-color: $color8;
+}
+
+.toggle-dot {
+  font-size: 10px;
+}
+
+.toggle-on .toggle-dot,
+.toggle-on .toggle-label {
+  color: #000000;
+}
+
+.toggle-off .toggle-dot,
+.toggle-off .toggle-label {
+  color: $foreground;
+}
+
+.toggle-label {
+  font-size: 11px;
+  font-family: "Satoshi Variable";
+  font-weight: bold;
+}
+
+.toggle-slider { all: unset; }
+
+.toggle-disabled {
+  background-color: rgba(255, 255, 255, 0.05);
+  opacity: 0.5;
+}
+
+.toggle-disabled label {
+  color: $color8;
+}
+// --------------------------
+// BATTERY POPUP
+// --------------------------
+
+.battery-percent-label {
+  color: $foreground;
+  font-size: 27px;
+  font-family: "Satoshi Variable";
+  font-weight: bold;
+  margin: 0;
+  padding: 0;
+}
+
+.battery-time-label {
+  color: $color7;
+  font-size: 17px;
+  font-family: "Satoshi Variable";
+  margin: 0;
+  padding: 0;
+}
+
+.popup-divider {
+  background-color: rgba(255, 255, 255, 0.1);
+  min-height: 1px;
+  margin: 2px 0;
+}
+
+.popup-vsep {
+  background-color: rgba(255, 255, 255, 0.1);
+  min-width: 1px;
+  margin: 0 4px;
+}
+
+.gov-btn {
+  background-color: transparent;
+  border: 1px solid $color8;
+  border-radius: 6px;
+  padding: 4px 25px;
+  min-height: 0;
+  margin: 0;
+  transition: all 200ms ease;
+}
+
+.gov-btn:hover {
+  border-color: $color1;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.gov-btn label {
+  color: $color7;
+  font-size: 12px;
+  font-family: "Satoshi Variable";
+  min-height: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.gov-active {
+  background-color: $color3;
+  border-color: $color3;
+  transition: all 200ms ease;
+}
+
+.gov-active label {
+  color: #000000;
+  font-family: "Satoshi Variable";
+  font-weight: bold;
+  font-size: 12px;
+}
+
+.gov-active:hover {
+  background-color: $color1;
+  border-color: $color1;
+}
+
+window.battery-popup * {
+  min-height: 0;
+  min-width: 0;
+}
+
+window.battery-popup box {
+  margin: 0;
+  padding: 0;
+}
+
+window.battery-popup label {
+  margin: 0;
+  padding: 0;
+  font-family: "Satoshi Variable";
+}
+
+window.battery-popup button {
+  margin: 0;
+  padding: 2px 6px;
+}
+
+window.battery-popup .popup-box {
+  padding: 10px;
+  margin: 0;
+}
+
+window.battery-popup .toggle-btn {
+  padding: 4px 14px;
+  margin: 0;
+}
+
+window.battery-popup .popup-section-title {
+  margin-bottom: 2px;
+  padding: 0;
+}
+
+window.battery-popup .gov-btn {
+  padding: 4px 10px;
+  margin: 0;
+}
+
+window.battery-popup .battery-percent-label {
+  margin-bottom: 0;
+}
+
+window#calendar-popup {
+  border-radius: 12px;
+}

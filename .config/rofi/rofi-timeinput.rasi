@@ -1,0 +1,43 @@
+configuration {
+    click-to-exit: true;
+    show-icons: false;
+    columns:    1;
+}
+
+* {
+    background-color: transparent;
+    text-color: rgba(255, 255, 255, 1);
+    font-family: "Satoshi Variable 11";
+}
+
+window {
+    width:            300px;
+    height:           100px;
+    border:           0px;
+    border-radius:    12px;
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+mainbox {
+    background-color: transparent;
+    children:         [ inputbar ];
+    padding:          6px;
+}
+
+inputbar {
+    background-color: transparent;
+    children:         [ entry ];
+    padding:          8px;
+}
+
+entry {
+    background-color:  transparent;
+    text-color:        rgba(255, 255, 255, 1);
+    placeholder:       "Perform action at (HH:MM):";
+    placeholder-color: rgba(255, 255, 255, 0.4);
+    font:              "Satoshi Variable 13";
+}
+
+listview {
+    enabled: false;
+}

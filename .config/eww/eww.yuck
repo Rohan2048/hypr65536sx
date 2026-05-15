@@ -1,0 +1,87 @@
+(include "/home/rohan/.config/eww/shortcuts.yuck")
+(include "/home/rohan/.config/eww/commands.yuck")
+(include "/home/rohan/.config/eww/music-bar.yuck")
+(include "/home/rohan/.config/eww/listeners.yuck")
+(include "/home/rohan/.config/eww/polls.yuck")
+(include "/home/rohan/.config/eww/calendar.yuck")
+(include "/home/rohan/.config/eww/widgets.yuck")
+
+;; --------------------------
+;; WINDOWS
+;; --------------------------
+
+(defwindow bar-window
+  :monitor 0
+  :namespace "bar-window"
+  :geometry (geometry :x "0" :y "0" :width "100%" :height "28px" :anchor "bottom center")
+  :exclusive true
+  (bar))
+
+(defwindow volume-popup
+  :monitor 0
+  :namespace "volume-popup"
+  :geometry (geometry :x "1px" :y "0px" :width "290px" :height "200px" :anchor "bottom right")
+  :exclusive false
+  :focusable false
+  (volume-popup-widget))
+
+(defwindow brightness-popup
+  :monitor 0
+  :namespace "brightness-popup"
+  :geometry (geometry :x "0px" :y "0px" :width "200px" :anchor "bottom right")
+  :exclusive false
+  :focusable false
+  (brightness-popup-widget))
+
+(defwindow notifications-popup
+  :namespace "notifications"
+  :monitor 0
+  :geometry (geometry :x "0" :y "0px" :width "400px" :height "400px" :anchor "bottom right")
+  :exclusive false
+  :focusable false
+  (notifications-popup-widget))
+
+(defwindow wifi-popup
+  :monitor 0
+  :namespace "wifi-popup"
+  :geometry (geometry :x "0px" :y "0px" :width "300px" :anchor "bottom right")
+  :exclusive false
+  :focusable false
+  (wifi-popup-widget))
+
+(defwindow bt-popup
+  :monitor 0
+  :namespace "bt-popup"
+  :geometry (geometry :x "0px" :y "0px" :width "300px" :anchor "bottom right")
+  :exclusive false
+  :focusable false
+  (bt-popup-widget))
+
+(defwindow battery-popup
+  :monitor 0
+  :namespace "battery-popup"
+  :geometry (geometry :x "0px" :y "0px" :height "200px" :width "300px" :anchor "bottom right")
+  :exclusive false
+  :focusable false
+  (battery-popup-widget))
+
+(defwindow music-popup
+  :monitor 0
+  :namespace "music-popup"
+  :geometry (geometry :x "0px" :y "0px" :width "350px" :height "200px" :anchor "bottom left")
+  :exclusive false
+  :focusable false
+  (music-popup-widget))
+
+
+(defwindow calendar-popup
+  :monitor 0
+  :namespace "calendar-popup"
+  :geometry (geometry
+    :x "0px" :y "0px"
+    :width "320px"
+    :height "370px"
+    :anchor "bottom right")
+  :exclusive false
+  :focusable false
+  (calendar-root))

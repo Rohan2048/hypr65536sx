@@ -1,0 +1,32 @@
+;; ============================================================
+;; music-bar.yuck — Music tray widget
+;; PLAYER_STATUS, PLAYER_TITLE, PLAYER_META are declared in listeners.yuck
+;; ============================================================
+
+(defwidget music-tray []
+  (box
+    :orientation "h"
+    :spacing 0
+    :halign "start"
+    :valign "center"
+    :hexpand false
+    :vexpand false
+    :width 200
+    :space-evenly false
+    :visible {PLAYER_STATUS == "Playing" || PLAYER_STATUS == "Paused"}
+
+    (button
+      :onclick "eww open music-popup --toggle &"
+      :class "music-tray-btn"
+      :hexpand false
+      :vexpand false
+      (label
+        :text {PLAYER_TITLE == "" ? "Now Playing" : "Now Playing: ${PLAYER_TITLE}"}
+        :class "music-tray-title"
+        :truncate-right true
+        :halign "start"
+        :limit-width 40
+        :hexpand false
+        :vexpand false))
+  )
+)

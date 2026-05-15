@@ -1,0 +1,63 @@
+@import "~/.cache/wal/colors-rofi.rasi"
+
+configuration {
+    click-to-exit: true;
+    modi: "drun";
+    show-icons: false;
+}
+
+* {
+    font: "Satoshi Variable 13";
+}
+
+window {
+    width:            320px;
+    height:           52px;
+    border:           1px solid;
+    border-color:     rgba(255, 255, 255, 0.1);
+    border-radius:    10px;
+    background-color: rgba(11, 18, 26, 0.45);
+    location:         center;
+    anchor:           center;
+    transparency:     "real";
+}
+
+mainbox {
+    background-color: transparent;
+    children:         [ inputbar ];
+    spacing:          0px;
+    padding:          0px;
+    expand:           true;
+    vertical-align:   0.5;
+}
+
+inputbar {
+    background-color: transparent;
+    children:         [ prompt, entry ];
+    padding:          0px 14px;
+    spacing:          6px;
+    expand:           true;
+    vertical-align:   0.5;
+    horizontal-align: 0.5;
+}
+
+prompt {
+    enabled:          true;
+    background-color: transparent;
+    text-color:       rgba(255, 255, 255, 0.35);
+    vertical-align:   0.5;
+    horizontal-align: 0.5;
+}
+
+entry {
+    background-color: transparent;
+    text-color:       rgba(255, 255, 255, 0.9);
+    placeholder:      "Add command by typing here...";
+    placeholder-color: rgba(255, 255, 255, 0.25);
+    vertical-align:   0.5;
+    horizontal-align: 0.0;
+    expand:           true;
+}
+
+case-indicator { enabled: false; }
+listview       { enabled: false; }

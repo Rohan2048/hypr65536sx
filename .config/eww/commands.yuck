@@ -1,0 +1,104 @@
+;; ============================================================
+;; commands.yuck — Command launcher panel
+;; ============================================================
+
+(deflisten COMMANDS :initial "[]"
+  "bash ~/.config/eww/commands-list.sh")
+
+(defvar COMMANDS_EXPANDED "")
+
+(defwidget commands-group [group commands]
+  (box :orientation "v"
+       :space-evenly false
+       :spacing 0
+       :class "cmd-group"
+
+    (button
+      :onclick "bash ~/.config/eww/commands-toggle.sh '${group}' &"
+      :class "cmd-group-header"
+      (box :orientation "h"
+           :space-evenly false
+           :spacing 5
+           :valign "start"
+        (label :text {COMMANDS_EXPANDED == group ? "▼" : "▶"}
+               :class "cmd-arrow")
+        (label :text group
+               :class "cmd-group-label"
+               :halign "start"
+               :hexpand true
+               :truncate true)))
+
+    (box :orientation "v"
+         :space-evenly false
+         :spacing 2
+         :visible {COMMANDS_EXPANDED == group}
+         :class {COMMANDS_EXPANDED == group ? "cmd-list cmd-list-open" : "cmd-list"}
+
+      (for cmd in commands
+        (button
+          :onclick "bash ~/.config/eww/commands-launch.sh '${cmd.cmd}' '${cmd.terminal}' && eww close commands-window"
+          :onmiddleclick {"bash ~/.config/eww/commands-remove.sh '" + group + "' '" + cmd.cmd + "' '" + cmd.terminal + "' &"}
+          :class "cmd-btn"
+          :tooltip "${cmd.cmd}"
+          (box :orientation "v"
+               :space-evenly false
+               :spacing 0
+            (label :text "${cmd.cmd}"
+                   :class "cmd-label"
+                   :halign "start"
+                   :truncate true)
+            (label :text {cmd.terminal ? "  console" : "  direct"}
+                   :class "cmd-type-label"
+                   :halign "start")))))))
+
+(defwidget commands-widget []
+  (box :orientation "v"
+       :space-evenly false
+       :spacing 0
+       :class "commands-box"
+
+    (box :orientation "h"
+         :space-evenly false
+         :spacing 0
+         :class "cmd-header-bar"
+         :halign "fill"
+         :valign "center"
+
+      (label :text "Commands"
+             :class "cmd-title"
+             :halign "start"
+             :valign "center"
+             :hexpand true)
+
+      (button
+        :onclick "bash ~/.config/eww/commands-add.sh &"
+        :class "cmd-add-btn"
+        (box :valign "center" :halign "center"
+          (label :text "+"
+                 :class "cmd-add-label"
+                 :valign "center"
+                 :halign "center"))))
+
+    (scroll :orientation "v"
+            :vscroll true
+            :hscroll false
+            :height 240
+            :vexpand true
+
+      (box :orientation "v"
+           :space-evenly false
+           :spacing 4
+           :class "cmd-groups-container"
+
+        (for group-entry in COMMANDS
+          (commands-group
+            :group {group-entry.group}
+            :commands {group-entry.commands}))))))
+
+(defwindow commands-window
+  :monitor 0
+  :namespace "commands-window"
+  :geometry (geometry :x "0px" :y "0px" :width "220px" :height "280px" :anchor "center right")
+  :exclusive false
+  :focusable false
+  (commands-widget))

@@ -1,0 +1,117 @@
+[
+  {
+    "group": "llmfit",
+    "commands": [
+      {
+        "cmd": "llmfit",
+        "terminal": true
+      }
+    ]
+  },
+  {
+    "group": "system",
+    "commands": [
+      {
+        "cmd": "sudo btop",
+        "terminal": true
+      },
+      {
+        "cmd": "sudo powertop",
+        "terminal": true
+      },
+      {
+        "cmd": "sudo tlp fullcharge",
+        "terminal": true
+      },
+      {
+        "cmd": "sudo powertop --csv=/home/rohan/powertop.csv --time=10 && grep -A 30 \"Top causes\" ~/powertop.csv",
+        "terminal": true
+      }
+    ]
+  },
+  {
+    "group": "lm studio",
+    "commands": [
+      {
+        "cmd": "lms -h",
+        "terminal": true
+      },
+      {
+        "cmd": "lms import",
+        "terminal": true
+      }
+    ]
+  },
+  {
+    "group": "vdirsyncer",
+    "commands": [
+      {
+        "cmd": "vdirsyncer discover google_calendar ",
+        "terminal": true
+      }
+    ]
+  },
+  {
+    "group": "ffmpeg",
+    "commands": [
+      {
+        "cmd": "ffmpeg -i \"2026-04-20 01-41-25.mp4\" -c:v libx264 -crf 40 -preset fast -g 24 -movflags +faststart -an hypr.mp4 ",
+        "terminal": true
+      }
+    ]
+  },
+  {
+    "group": "magic",
+    "commands": [
+      {
+        "cmd": "magic -T scmos ",
+        "terminal": true
+      },
+      {
+        "cmd": "exttospice file.ext",
+        "terminal": true
+      }
+    ]
+  },
+  {
+    "group": "docker",
+    "commands": [
+      {
+        "cmd": "xhost +local:docker",
+        "terminal": true
+      },
+      {
+        "cmd": "docker start magic_ubuntu",
+        "terminal": true
+      },
+      {
+        "cmd": "tightvncserver :1 #for docker",
+        "terminal": true
+      },
+      {
+        "cmd": "docker exec -it magic_ubuntu bash  ",
+        "terminal": true
+      },
+      {
+        "cmd": "docker cp magic_ubuntu:/root/project /home/rohan/Downloads/MISC/MAGIC #edit as per preference",
+        "terminal": true
+      },
+      {
+        "cmd": "docker stop magic_ubuntu",
+        "terminal": true
+      },
+      {
+        "cmd": "export USER=root  #fix VNC bug",
+        "terminal": true
+      },
+      {
+        "cmd": "tightvncserver -kill :1",
+        "terminal": true
+      },
+      {
+        "cmd": "tightvncserver :1 -geometry 1920x1080",
+        "terminal": true
+      }
+    ]
+  }
+]

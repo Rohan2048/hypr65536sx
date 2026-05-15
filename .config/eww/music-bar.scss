@@ -1,0 +1,116 @@
+// --------------------------
+// MUSIC BAR STYLES
+// Import in eww.scss:
+//   @import "music-bar";
+// --------------------------
+
+.music-tray-btn {
+    background-color: transparent;
+    border: none;
+    border-radius: 6px;
+    padding: 1px 10px;
+    min-width: 0;
+    min-height: 0;
+}
+
+.music-tray-btn:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+.music-tray-title {
+    color: $color8;
+    font-size: 14px;
+    font-family: "Satoshi Variable";
+    animation: slideup 0.35s cubic-bezier(0.23, 1, 0.32, 1) both;
+}
+
+@keyframes slideup {
+    from {
+        margin-top: 6px;
+        opacity: 0;
+    }
+    to {
+        margin-top: 0px;
+        opacity: 1;
+    }
+}
+
+.music-ctrl-btn {
+    background-color: transparent;
+    border: none;
+    border-radius: 4px;
+    padding: 1px 6px;
+    min-width: 0;
+    min-height: 0;
+}
+
+.music-ctrl-btn:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+// --------------------------
+// MUSIC POPUP
+// --------------------------
+
+.music-art {
+    border-radius: 10px;
+}
+
+.music-title-lbl {
+    color: $foreground;
+    font-size: 13px;
+    font-family: "Satoshi Variable";
+    font-weight: bold;
+}
+
+.music-artist-lbl {
+    color: $color8;
+    font-size: 11px;
+    font-family: "Satoshi Variable";
+    font-weight: bold;
+}
+
+.music-album-lbl {
+    color: $color8;
+    font-size: 10px;
+    font-family: "Satoshi Variable";
+}
+
+.music-popup-ctrl {
+    background-color: transparent;
+    border: 1px solid $color8;
+    border-radius: 6px;
+    padding: 2px 4px;
+    min-height: 0;
+}
+
+.music-popup-ctrl:hover {
+    border-color: $color1;
+    background-color: rgba(255, 255, 255, 0.08);
+}
+
+.music-popup-play {
+    background-color: $color3;
+    border: 1px solid $color3;
+    border-radius: 6px;
+    padding: 6px 6px;
+    min-height: 0;
+}
+
+.music-popup-play:hover {
+    background-color: $color1;
+    border-color: $color1;
+}
+
+.music-popup-play label,
+.music-popup-ctrl label {
+    font-size: 13px;
+    font-family: "Satoshi Variable";
+}
+
+.music-skip-lbl {
+    font-size: 11px;
+    font-family: "Satoshi Variable";
+    font-weight: bold;
+    color: $foreground;
+}

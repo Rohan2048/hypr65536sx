@@ -1,0 +1,657 @@
+;; ============================================================
+;; widgets.yuck — All widget definitions
+;; Variables are declared in listeners.yuck + polls.yuck
+;; ============================================================
+
+;; --------------------------
+;; VOLUME POPUP
+;; --------------------------
+
+(defwidget volume-popup-widget []
+  (box :orientation "v"
+       :spacing 6
+       :class "popup-box"
+       :vexpand false
+       :hexpand false
+       :halign "fill"
+       :space-evenly false
+
+    (label :text "Volume"
+           :class "popup-title"
+           :halign "center"
+           :vexpand false)
+
+    (box :orientation "h"
+         :spacing 6
+         :halign "center"
+         :valign "center"
+         :hexpand false
+         :space-evenly false
+
+      (button :onclick "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
+              :class "popup-mute-btn"
+        (label :text {VOLUME_STATE.muted ? "🔇" : "🔊"}
+               :vexpand false
+               :hexpand false))
+
+      (scale :min 0 :max 100
+             :value {VOLUME_STATE.volume}
+             :class "popup-slider"
+             :onchange "wpctl set-volume @DEFAULT_AUDIO_SINK@ {}%"
+             :hexpand true))
+
+    (scroll :orientation "v"
+            :height 70
+            :hexpand false
+
+      (box :orientation "v"
+           :spacing 2
+           :halign "center"
+           :valign "start"
+           :vexpand false
+           :space-evenly false
+
+        (for sink in {VOLUME_STATE.sinks}
+          (button :onclick "bash ~/.config/eww/set-sink.sh '${sink}' &"
+        :class {VOLUME_STATE.sink == sink ? "sink-btn sink-btn-active" : "sink-btn"}
+        :height 30
+        :vexpand false
+        :hexpand false
+  (label :text "${sink}"
+         :wrap true
+         :halign "center"
+         :vexpand false
+         :hexpand true)))))
+
+    (box :orientation "v"
+         :spacing 4
+         :halign "fill"
+         :vexpand false
+         :space-evenly false
+
+      (label :text "OUTPUT DEVICE"
+             :class "popup-section-title"
+             :halign "start"
+             :vexpand false)
+
+      (label :text {VOLUME_STATE.sink}
+             :class "popup-device-active"
+             :halign "start"
+             :wrap true
+             :vexpand false))))
+
+
+;; --------------------------
+;; BRIGHTNESS POPUP
+;; --------------------------
+
+(defwidget brightness-popup-widget []
+  (box :orientation "v"
+       :spacing 10
+       :class "popup-box"
+       :space-evenly false
+
+    (label :text "Brightness" :class "popup-title" :halign "center")
+
+    (box :orientation "h"
+         :spacing 3
+         :width 269
+         :halign "center"
+         :space-evenly false
+
+      (label :text "🔆" :class "popup-icon")
+      (scale :min 0 :max 100
+             :value BRIGHTNESS
+             :class "popup-slider"
+             :hexpand true
+             :onchange "brightnessctl set {}%"))))
+
+
+;; --------------------------
+;; NOTIFICATIONS POPUP
+;; --------------------------
+
+(defwidget notifications-popup-widget []
+  (box :orientation "v"
+       :halign "fill"
+       :valign "start"
+       :hexpand true
+       :vexpand false
+       :space-evenly false
+
+    (box :orientation "v"
+         :spacing 0
+         :class "popup-box"
+         :halign "fill"
+         :valign "start"
+         :space-evenly false
+
+      (scroll :orientation "v"
+              :height 631
+              :vexpand false
+
+        (box :orientation "v"
+             :spacing 10
+             :halign "fill"
+             :valign "start"
+             :vexpand false
+             :space-evenly false
+
+          (box :orientation "h"
+               :spacing 6
+               :halign "fill"
+               :vexpand false
+               :space-evenly false
+
+            (label :text "Notifications"
+                   :class "notif-text"
+                   :halign "center"
+                   :hexpand true)
+
+            (button :onclick "dunstctl history-clear"
+                    :class "popup-mute-btn"
+              (label :text "✕ Clear All")))
+
+          (for notif in NOTIF_LIST
+            (box :orientation "h"
+                 :spacing 6
+                 :halign "fill"
+                 :valign "start"
+                 :vexpand false
+                 :hexpand false
+                 :height 40
+                 :space-evenly false
+
+              (label :text notif
+                     :wrap true
+                     :halign "center"
+                     :class "notif-text"
+                     :hexpand true)
+
+              (button :onclick {"bash ~/.config/eww/notif-copy.sh \"" + notif + "\""}
+                      :class "popup-mute-btn"
+                      :vexpand false
+                      :hexpand false
+                      :visible {notif != "No notifications"}
+                (label :text "📋")))))))))
+
+
+;; --------------------------
+;; WIFI POPUP
+;; --------------------------
+
+(defwidget wifi-popup-widget []
+  (box :orientation "v"
+       :spacing 6
+       :class "popup-box"
+       :halign "fill"
+       :vexpand false
+       :space-evenly false
+       :max-height 300
+    (box :orientation "h"
+         :spacing 6
+         :halign "fill"
+         :valign "center"
+         :space-evenly false
+         :max-height 300
+
+      (label :text "Wi-Fi"
+             :class "popup-title"
+             :halign "start"
+             :hexpand true)
+
+      (button
+        :onclick "bash -c '
+          if nmcli -t -f WIFI g | grep -q enabled; then
+            nmcli radio wifi off
+          else
+            nmcli radio wifi on
+          fi
+        ' &"
+        :class {WIFI_STATE.ssid != "WiFi-OFF" ? "toggle-btn toggle-on" : "toggle-btn toggle-off"}
+        :hexpand false
+        (box :orientation "h" :spacing 4 :valign "center" :space-evenly false
+          (label :text {WIFI_STATE.ssid != "WiFi-OFF" ? "●" : "○"} :class "toggle-dot")
+          (label :text {WIFI_STATE.ssid != "WiFi-OFF" ? "ON" : "OFF"} :class "toggle-label"))))
+
+    (label :text "Saved Networks"
+           :class "popup-section-title"
+           :halign "start")
+
+    (scroll :orientation "v"
+            :height 170
+            :vexpand false
+
+      (box :orientation "v"
+           :spacing 4
+           :halign "fill"
+           :valign "start"
+           :space-evenly false
+
+        (for net in {WIFI_STATE.history}
+          (box :orientation "h"
+               :spacing 4
+               :halign "fill"
+               :height 36
+               :space-evenly false
+
+            (button
+              :onclick {"bash ~/.config/eww/wifi-history.sh connect \"" + net.ssid + "\" &"}
+              :class {WIFI_STATE.ssid == net.ssid ? "device-connected" : "wifi-entry"}
+              :hexpand true
+              (label :text {net.ssid} :halign "start" :wrap false))
+
+            (button
+              :onclick {"bash ~/.config/eww/wifi-history.sh forget \"" + net.ssid + "\" &"}
+              :class "popup-forget-btn"
+              :hexpand false
+              (label :text "Forget"))))))))
+
+
+;; --------------------------
+;; BLUETOOTH POPUP
+;; --------------------------
+
+(defwidget bt-popup-widget []
+  (box :orientation "v"
+       :spacing 6
+       :class "popup-box"
+       :halign "fill"
+       :vexpand false
+       :space-evenly false
+
+    (box :orientation "h"
+         :spacing 6
+         :halign "fill"
+         :valign "center"
+         :space-evenly false
+
+      (label :text "Bluetooth"
+             :class "popup-title"
+             :halign "start"
+             :hexpand true)
+
+      (button
+        :onclick "bash -c '
+          if rfkill list bluetooth | grep -q \"Soft blocked: no\"; then
+            rfkill block bluetooth
+          else
+            rfkill unblock bluetooth
+          fi
+        ' &"
+        :class {BT_STATE.device != "Bluetooth-OFF" ? "toggle-btn toggle-on" : "toggle-btn toggle-off"}
+        :hexpand false
+        (box :orientation "h" :spacing 4 :valign "center" :space-evenly false
+          (label :text {BT_STATE.device != "Bluetooth-OFF" ? "●" : "○"} :class "toggle-dot")
+          (label :text {BT_STATE.device != "Bluetooth-OFF" ? "ON" : "OFF"} :class "toggle-label"))))
+
+    (label :text "Paired Devices"
+           :class "popup-section-title"
+           :halign "start")
+
+    (scroll :orientation "v"
+            :max-height 300
+            :min-height 60
+            :height 170
+            :hexpand false
+
+      (box :orientation "v"
+           :spacing 4
+           :halign "fill"
+           :valign "start"
+           :space-evenly false
+
+        (for dev in {BT_STATE.history}
+          (box :orientation "h"
+               :spacing 4
+               :halign "fill"
+               :height 36
+               :space-evenly false
+
+            (button
+              :onclick {"bash ~/.config/eww/bt-history.sh connect \"" + dev.name + "\" &"}
+              :class {BT_STATE.device == dev.name ? "device-connected" : "wifi-entry"}
+              :hexpand true
+              (label :text {dev.name} :halign "start" :wrap false))
+
+            (button
+              :onclick {"bash ~/.config/eww/bt-history.sh disconnect \"" + dev.name + "\" &"}
+              :class "popup-disconnect-btn"
+              :hexpand false
+              (label :text "✕"))
+
+            (button
+              :onclick {"bash ~/.config/eww/bt-history.sh forget \"" + dev.name + "\" &"}
+              :class "popup-forget-btn"
+              :hexpand false
+              (label :text "Forget"))))))))
+
+
+;; --------------------------
+;; BATTERY POPUP
+;; --------------------------
+
+(defwidget battery-popup-widget []
+  (box :orientation "v"
+       :class "popup-box"
+       :halign "fill"
+       :valign "start"
+       :space-evenly false
+       :spacing 20
+
+    (box :orientation "v"
+         :halign "fill"
+         :valign "start"
+         :space-evenly false
+         :spacing 10
+
+      (label :text "${BATTERY_STATE.capacity}%"
+             :class "battery-percent-label"
+             :halign "start")
+
+      (label :text {BATTERY_STATE.time == "---" ? "---" : "${BATTERY_STATE.time} remaining"}
+             :class "battery-time-label"
+             :halign "start"
+             :valign "start"))
+
+    (box :orientation "h"
+         :halign "center"
+         :valign "start"
+         :space-evenly false
+         :spacing 10
+
+     (button
+  :onclick "bash ~/.config/eww/turbo-toggle.sh &"
+  :class {TURBO_MODE == "ON" ? "toggle-btn toggle-on" : BATTERY_STATE.capacity < 20 && BATTERY_STATE.status != "charging" ? "toggle-btn toggle-disabled" : "toggle-btn toggle-off"}
+  :visible {TURBO_MODE != "UNSUPPORTED"}
+  (box :orientation "h" :spacing 2 :valign "start" :space-evenly false
+    (label :text {TURBO_MODE == "ON" ? "●" : "○"} :class "toggle-dot")
+    (label :text {BATTERY_STATE.capacity < 20 && BATTERY_STATE.status != "charging" && TURBO_MODE == "OFF" ? "⚠ Low Battery" : "Turbo Mode"} :class "toggle-label")))
+
+      (button
+        :onclick "bash ~/.config/eww/lazy-toggle.sh &"
+        :class {LAZY_MODE == "ON" ? "toggle-btn toggle-on" : "toggle-btn toggle-off"}
+        :visible {TURBO_MODE == "UNSUPPORTED"}
+        (box :orientation "h" :spacing 2 :valign "start" :space-evenly false
+          (label :text {LAZY_MODE == "ON" ? "●" : "○"} :class "toggle-dot")
+          (label :text "Lazy Mode" :class "toggle-label"))))
+
+    (box :orientation "h"
+         :halign "center"
+         :valign "start"
+         :space-evenly false
+         :spacing 40
+         :vexpand false
+         :hexpand false
+
+      (box :orientation "v"
+           :halign "center"
+           :hexpand false
+           :valign "start"
+           :space-evenly false
+           :spacing 2
+
+        (label :text "Prioritise"
+               :class "popup-section-title"
+               :halign "center" :valign "start")
+
+        (button :onclick "bash ~/.config/eww/set-governor.sh powersave &"
+                :class {CPU_GOVERNOR == "powersave" ? "gov-btn gov-active" : "gov-btn"}
+                :halign "fill"
+          (label :text "Powersave" :halign "center"))
+
+        (button :onclick "bash ~/.config/eww/set-governor.sh balanced &"
+                :class {CPU_GOVERNOR == "balanced" ? "gov-btn gov-active" : "gov-btn"}
+                :halign "fill"
+          (label :text "Balanced" :halign "center"))
+
+        (button :onclick "bash ~/.config/eww/set-governor.sh performance &"
+                :class {CPU_GOVERNOR == "performance" ? "gov-btn gov-active" : "gov-btn"}
+                :halign "fill"
+          (label :text "Performance" :halign "center")))
+
+      (box :orientation "v"
+           :halign "center"
+           :valign "start"
+           :hexpand false
+           :space-evenly false
+           :spacing 2
+
+        (label :text "Optimise For"
+               :class "popup-section-title"
+               :halign "center"
+               :valign "start")
+
+        (button :onclick "bash ~/.config/eww/set-tuned.sh powersave &"
+                :class {TUNED_PROFILE == "powersave" ? "gov-btn gov-active" : "gov-btn"}
+                :halign "fill"
+          (label :text "Powersave" :halign "center"))
+
+        (button :onclick "bash ~/.config/eww/set-tuned.sh balanced &"
+                :class {TUNED_PROFILE == "balanced" ? "gov-btn gov-active" : "gov-btn"}
+                :halign "fill"
+          (label :text "Balanced" :halign "center"))
+
+        (button :onclick "bash ~/.config/eww/set-tuned.sh desktop &"
+                :class {TUNED_PROFILE == "desktop" ? "gov-btn gov-active" : "gov-btn"}
+                :halign "fill"
+          (label :text "Desktop" :halign "center"))
+
+        (button :onclick "bash ~/.config/eww/set-tuned.sh latency-performance &"
+                :class {TUNED_PROFILE == "latency-performance" ? "gov-btn gov-active" : "gov-btn"}
+                :halign "fill"
+          (label :text "Latency" :halign "center"))
+
+        (button :onclick "bash ~/.config/eww/set-tuned.sh throughput-performance &"
+                :class {TUNED_PROFILE == "throughput-performance" ? "gov-btn gov-active" : "gov-btn"}
+                :halign "fill"
+          (label :text "Max Performance" :halign "center"))
+
+        (button :onclick "bash ~/.config/eww/set-tuned.sh virtual-host &"
+                :class {TUNED_PROFILE == "virtual-host" ? "gov-btn gov-active" : "gov-btn"}
+                :halign "fill"
+          (label :text "VM Host" :halign "center"))))))
+
+
+;; --------------------------
+;; BATTERY ICON WIDGET
+;; --------------------------
+
+(defwidget battery-icon-widget []
+  (box :orientation "h" :spacing 2 :valign "center" :space-evenly false
+    (image
+      :width 20
+      :height 20
+      :path {
+        BATTERY_STATE.icon == "FULL"           ? "/home/rohan/.config/icons/full-battery.svg"       :
+        BATTERY_STATE.icon == "ABOVE85"        ? "/home/rohan/.config/icons/above85.svg"            :
+        BATTERY_STATE.icon == "HIGH"           ? "/home/rohan/.config/icons/high-battery.svg"       :
+        BATTERY_STATE.icon == "MED"            ? "/home/rohan/.config/icons/med-battery.svg"        :
+        BATTERY_STATE.icon == "HALF"           ? "/home/rohan/.config/icons/half-battery.svg"       :
+        BATTERY_STATE.icon == "BELOW_HALF"     ? "/home/rohan/.config/icons/below-half-battery.svg" :
+        BATTERY_STATE.icon == "LOW"            ? "/home/rohan/.config/icons/low-battery.svg"        :
+        BATTERY_STATE.icon == "ABOVE85_CHG"    ? "/home/rohan/.config/icons/above85.svg"            :
+        BATTERY_STATE.icon == "HIGH_CHG"       ? "/home/rohan/.config/icons/high-battery.svg"       :
+        BATTERY_STATE.icon == "MED_CHG"        ? "/home/rohan/.config/icons/med-battery.svg"        :
+        BATTERY_STATE.icon == "HALF_CHG"       ? "/home/rohan/.config/icons/half-battery.svg"       :
+        BATTERY_STATE.icon == "BELOW_HALF_CHG" ? "/home/rohan/.config/icons/below-half-battery.svg" :
+        BATTERY_STATE.icon == "LOW_CHG"        ? "/home/rohan/.config/icons/low-battery.svg"        :
+        BATTERY_STATE.icon == "VERY_LOW_CHG"   ? "/home/rohan/.config/icons/very-low-battery.svg"   :
+                                                 "/home/rohan/.config/icons/very-low-battery.png"
+      })
+    (image
+      :visible {BATTERY_STATE.icon == "ABOVE85_CHG" || BATTERY_STATE.icon == "HIGH_CHG" ||
+                BATTERY_STATE.icon == "MED_CHG"     || BATTERY_STATE.icon == "HALF_CHG" ||
+                BATTERY_STATE.icon == "BELOW_HALF_CHG" || BATTERY_STATE.icon == "LOW_CHG" ||
+                BATTERY_STATE.icon == "VERY_LOW_CHG"}
+      :width 10
+      :height 10
+      :path "/home/rohan/.config/icons/bolt.svg")))
+
+
+
+;; --------------------------
+;; PRELOAD (keeps non-visible listeners alive)
+;; --------------------------
+
+(defwidget preload-polls []
+  (box :visible false
+    (label :text {WIFI_STATE.history})
+    (label :text {BT_STATE.history})
+    ))
+
+
+;; --------------------------
+;; MUSIC POPUP WIDGET
+;; --------------------------
+(defwidget music-popup-widget []
+  (box :orientation "v"
+       :spacing 6
+       :class "popup-box"
+       :halign "fill"
+       :valign "fill"
+       :hexpand false
+       :vexpand false
+       :space-evenly false
+       :width 350
+
+    (label :text "Now Playing"
+           :class "popup-title"
+           :halign "start")
+
+    (image
+      :path {PLAYER_META.art != "" ? PLAYER_META.art : "/home/rohan/.config/icons/music-placeholder.png"}
+      :width 84
+      :height 84
+      :halign "center"
+      :class "music-art")
+
+    (box :orientation "v" :spacing 2 :halign "center" :space-evenly false
+      (label :text {PLAYER_META.title != "" ? PLAYER_META.title : "Not Playing"}
+             :class "music-title-lbl"
+             :halign "center"
+             :limit-width 30
+             :wrap false)
+      (label :text {PLAYER_META.artist}
+             :class "music-artist-lbl"
+             :halign "center"
+             :limit-width 30
+             :wrap false)
+      (label :text {PLAYER_META.album}
+             :class "music-album-lbl"
+             :halign "center"
+             :limit-width 30
+             :wrap false))
+
+    (box :orientation "v" :spacing 2 :halign "fill" :space-evenly false
+      (scale
+        :min 0
+        :max 100
+        :value {PLAYER_META.duration > 0 ? (PLAYER_POSITION_DATA.secs / PLAYER_META.duration) * 100 : 0}
+        :class "popup-slider"
+        :hexpand true
+        :onchange "bash ~/.config/eww/music-seek.sh {}")
+
+      (box :orientation "h" :halign "fill" :space-evenly false
+        (label :text {PLAYER_POSITION_DATA.fmt}
+               :class "popup-section-title"
+               :halign "start"
+               :hexpand true)
+        (label :text {PLAYER_META.duration_fmt}
+               :class "popup-section-title"
+               :halign "end")))
+
+    (box :orientation "h" :halign "center" :spacing 0 :space-evenly false
+
+      (button :onclick "playerctl previous &"
+              :class "music-popup-ctrl"
+        (image :path "/home/rohan/.config/icons/previous.svg" :width 18 :height 18))
+
+      (button :onclick "playerctl play-pause &"
+              :class "music-popup-play"
+        (image
+          :path {PLAYER_STATUS == "Playing"
+            ? "/home/rohan/.config/icons/pause.svg"
+            : "/home/rohan/.config/icons/play.svg"}
+          :width 20
+          :height 20))
+
+      (button :onclick "playerctl next &"
+              :class "music-popup-ctrl"
+        (image :path "/home/rohan/.config/icons/next.svg" :width 18 :height 18)))))
+
+;; --------------------------
+;; BAR
+;; --------------------------
+
+(defwidget bar []
+  (box :orientation "h"
+       :space-evenly false
+       :halign "fill"
+       :valign "center"
+       :class "bar"
+
+    (preload-polls)
+
+    ;; LEFT — power button + now-playing
+    (box :halign "start"
+         :hexpand true
+         :spacing 0
+         :space-evenly false
+
+      (button :onclick "bash ~/.config/rofi/powermenu.sh &"
+              :class "power-btn"
+              :hexpand false
+              :vexpand false
+        (image :path "/home/rohan/.config/icons/power-btn.svg" :width 16 :height 16))
+
+      (music-tray))
+
+    ;; RIGHT — wifi → bt → volume → battery → time/date → notifications
+    (box :halign "end"
+         :hexpand false
+         :spacing 0
+         :valign "center"
+         :space-evenly false
+
+      (button :onclick "eww open wifi-popup --toggle &"
+              :class "control-icon"
+              :hexpand false
+        (image :path {WIFI_STATE.ssid != "WiFi-OFF" ? "/home/rohan/.config/icons/wifion.svg" : "/home/rohan/.config/icons/wifi-off.svg"}
+               :width 16 :height 16))
+
+      (button :onclick "eww open bt-popup --toggle &"
+              :class "control-icon"
+              :hexpand false
+        (image :path {BT_STATE.device != "Bluetooth-OFF" ? "/home/rohan/.config/icons/bluetooth-icon.svg" : "/home/rohan/.config/icons/bluetooth-off.svg"}
+               :width 16 :height 16))
+
+      (button :onclick "eww open volume-popup --toggle &"
+              :class "control-icon"
+              :visible {VOLUME_STATE.muted}
+        (image :path "/home/rohan/.config/icons/sound-mute.svg" :width 16 :height 16))
+
+      (button :onclick "eww open volume-popup --toggle &"
+              :class "control-icon"
+              :visible {!VOLUME_STATE.muted}
+        (image :path "/home/rohan/.config/icons/sound.svg" :width 16 :height 16))
+
+      (button :onclick "eww open battery-popup --toggle &"
+              :class "control-icon"
+        (box :spacing 2 :class "tray-section" :valign "center" :space-evenly false
+          (battery-icon-widget)
+          (label :text "${BATTERY_STATE.capacity}%" :class "tray")))
+
+      (button :onclick "eww open calendar-popup --toggle &"
+              :class "cal-btn"
+              :hexpand false
+        (box :orientation "v"
+             :spacing 1
+             :valign "center"
+             :space-evenly false
+          (label :text "${TIME}" :class "bar-time" :halign "center")
+          (label :text "${DATE}" :class "bar-date" :halign "center")))
+
+      (button :onclick "eww open notifications-popup --toggle &"
+              :class "control-icon"
+        (image :path "/home/rohan/.config/icons/bell.svg" :width 16 :height 16)))))

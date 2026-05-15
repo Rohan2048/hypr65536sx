@@ -1,0 +1,455 @@
+cava --> python based that is used for the visualizer effects
+
+---
+
+1. Battery Popup
+
+Purpose: Show battery info, add “Lazy Mode” toggle.
+
+Data needed:
+
+Battery percentage (BATTERY)
+
+Battery icon/status (BATTERY_ICON)
+
+Battery time to full/empty (BATTERY_TIME)
+
+Lazy Mode toggle (just a button, triggers your lazy-toggle.sh)
+
+
+UI Elements:
+
+Title: Battery
+
+Battery status + percentage + time
+
+Lazy Mode button
+
+Optional: small notifications or warnings if battery is low
+
+
+Notes:
+The Lazy Mode button will just trigger your script (bash ~/.config/eww/lazy-toggle.sh) and maybe display a small confirmation label like “Lazy Mode Enabled/Disabled”.
+
+
+---
+
+2. Wi-Fi Popup
+
+Purpose: Show connected SSID and other visible networks.
+
+Data needed:
+
+Current connected SSID (WIFI_SSID)
+
+Toggle Wi-Fi (state from WIFI_STATUS)
+
+List of nearby networks (nmcli dev wifi list or similar)
+
+
+UI Elements:
+
+Title: Wi-Fi
+
+Current connection label
+
+Toggle button (ON/OFF)
+
+Scrollable list of networks, each clickable to connect
+
+
+Notes:
+
+Each network button could run nmcli dev wifi connect <SSID>
+
+Maybe show signal strength icons or text
+
+
+
+---
+
+3. Bluetooth Popup
+
+Purpose: Show paired/available devices and toggle BT.
+
+Data needed:
+
+Bluetooth status (BT_STATUS)
+
+Paired or connected devices (BT_DEVICE)
+
+Toggle BT (ON/OFF)
+
+
+UI Elements:
+
+Title: Bluetooth
+
+Toggle button (ON/OFF)
+
+Scrollable list of paired/available devices
+
+Click device to connect/disconnect
+
+
+Notes:
+
+Device buttons could run something like bluetoothctl connect <MAC> or disconnect depending on state
+
+Consider showing an icon for connected vs available devices
+
+
+
+---
+
+4. Interaction
+
+All toggles (Lazy Mode, Wi-Fi, BT) are buttons that trigger scripts or commands
+
+Battery Lazy Mode should only reload sysctl, not the whole system
+
+Wi-Fi/BT popups need listeners or periodic polling for updates
+
+Scrollable lists for networks and devices for easier access
+
+
+
+---
+
+
+
+---
+
+1. Lazy Mode Script (Battery)
+
+#!/bin/bash
+# ~/.config/eww/lazy-toggle.sh
+SYSCTL_FILE="/etc/sysctl.conf"
+TARGET_LINES=("vm.dirty_background_ratio" "vm.dirty_ratio")
+
+# Determine current state
+ENABLED=true
+for LINE in "${TARGET_LINES[@]}"; do
+  if ! grep -q "^\s*#\s*$LINE" "$SYSCTL_FILE"; then
+    ENABLED=false
+    break
+  fi
+done
+
+if [ "$ENABLED" = true ]; then
+  # Disable lazy mode = uncomment lines
+  for LINE in "${TARGET_LINES[@]}"; do
+    sudo sed -i "s|^\s*#\s*\($LINE.*\)|\1|" "$SYSCTL_FILE"
+  done
+  echo "Lazy Mode Disabled"
+else
+  # Enable lazy mode = comment lines
+  for LINE in "${TARGET_LINES[@]}"; do
+    sudo sed -i "s|^\($LINE.*\)|#\1|" "$SYSCTL_FILE"
+  done
+  echo "Lazy Mode Enabled"
+fi
+
+# Reload sysctl
+sudo sysctl -p
+
+
+---
+
+2. Wi-Fi Toggle Script
+
+#!/bin/bash
+# ~/.config/eww/wifi-toggle.sh
+
+if nmcli radio wifi | grep -q "enabled"; then
+  nmcli radio wifi off
+else
+  nmcli radio wifi on
+fi
+
+
+---
+
+3. Connect to Wi-Fi Script (for popup list)
+
+#!/bin/bash
+# ~/.config/eww/connect-wifi.sh
+SSID="$1"
+nmcli dev wifi connect "$SSID"
+
+
+---
+
+4. Bluetooth Toggle Script
+
+#!/bin/bash
+# ~/.config/eww/bt-toggle.sh
+
+if rfkill list bluetooth | grep -q "Soft blocked: no"; then
+  rfkill block bluetooth
+else
+  rfkill unblock bluetooth
+fi
+
+
+---
+
+5. Connect to Bluetooth Device Script
+
+#!/bin/bash
+# ~/.config/eww/bt-connect.sh
+MAC="$1"
+bluetoothctl connect "$MAC"
+
+
+---
+
+Tips for later
+
+Make all scripts executable:
+
+
+chmod +x ~/.config/eww/*.sh
+
+Popups can call these scripts with :onclick "bash ~/.config/eww/script.sh" or pass arguments like SSID/MAC
+
+For Wi-Fi/BT lists, you can cache them in /tmp/eww/ and refresh every few seconds using listeners/polls
+
+
+
+---
+
+Further approaches:
+
+
+
+---
+
+Battery Popup Skeleton (.yuck)
+
+;; --------------------------
+;; BATTERY POPUP WIDGET
+;; --------------------------
+
+(defwidget battery-popup-widget []
+  (box :orientation "v" :spacing 12 :class "popup-box"
+       :hexpand false :vexpand false
+
+    ;; CPU Governor Slider
+    (box :orientation "v" :spacing 4 :halign "fill"
+      (label :text "CPU Governor" :class "popup-title" :halign "center")
+      (scale :min 0 :max 100
+             :value CPU_GOVERNOR_VALUE   ;; placeholder, read from system
+             :class "popup-slider"
+             :onchange "bash ~/.config/eww/set-cpu-governor.sh {}%"
+             :hexpand true)
+    )
+
+    ;; Tuned Slider
+    (box :orientation "v" :spacing 4 :halign "fill"
+      (label :text "Tuned Profile" :class "popup-title" :halign "center")
+      (scale :min 0 :max 100
+             :value TUNED_VALUE   ;; placeholder, read from system
+             :class "popup-slider"
+             :onchange "bash ~/.config/eww/set-tuned.sh {}%"
+             :hexpand true)
+    )
+
+    ;; Lazy Mode Toggle
+    (box :orientation "h" :spacing 6 :halign "start"
+         :valign "center"
+
+      (label :text "Lazy Mode" :class "popup-title")
+
+      (button :onclick "
+        eww open lazy-prompt-popup --toggle &"
+        :class "popup-toggle"
+        (label :text {LAZY_MODE == 'ON' ? '-•' : '•-'}))
+    )
+
+    ;; Turbo Mode Toggle
+    (box :orientation "h" :spacing 6 :halign "end"
+         :valign "center"
+
+      (label :text "Turbo Mode" :class "popup-title")
+
+      (button :onclick "bash ~/.config/eww/turbo-toggle.sh"
+              :class "popup-toggle"
+        (label :text {TURBO_MODE == 'ON' ? '-•' : '•-'}))
+    )
+  )
+)
+
+
+---
+
+Lazy Mode Prompt Popup
+
+(defwindow lazy-prompt-popup
+  :monitor 0
+  :namespace "lazy-prompt-popup"
+  :geometry (geometry :x "0" :y "0" :width "350px" :height "120px" :anchor "center")
+  :exclusive false
+  :focusable false
+
+  (box :orientation "v" :spacing 12 :class "popup-box" :halign "fill" :valign "center"
+
+    (label :text "Are you sure? This can change the vm_dirty writeback settings.\nIf you don't know what you are doing, refer to /etc/sysctl for more info."
+           :class "popup-warning"
+           :wrap true
+           :halign "center")
+
+    (box :orientation "h" :spacing 12 :halign "center"
+      (button :onclick "bash ~/.config/eww/lazy-toggle.sh & eww close lazy-prompt-popup"
+              :class "popup-confirm-btn"
+        (label :text "Yes"))
+      (button :onclick "eww close lazy-prompt-popup"
+              :class "popup-cancel-btn"
+        (label :text "No"))
+    )
+  )
+)
+
+
+---
+
+Scripts to Keep Ready
+
+1. Lazy Mode → lazy-toggle.sh (already done)
+
+
+2. CPU Governor → set-cpu-governor.sh
+
+
+3. Tuned Profile → set-tuned.sh
+
+
+4. Turbo Mode Toggle → turbo-toggle.sh
+
+
+
+You’ll want the Turbo Mode script to detect Intel Turbo, cache its state in /tmp/eww/turbo_state, then toggle on/off.
+
+
+---
+
+Notes
+
+Sliders: CPU_GOVERNOR_VALUE and TUNED_VALUE are placeholders — you can populate via listeners or polls from the system.
+
+Toggles: LAZY_MODE and TURBO_MODE will be listeners that read the cached state files.
+
+Prompt: Lazy Mode asks confirmation before running the script.
+
+Toggle style: •- = off, -• = on, consistent across popups.
+
+
+
+---
+Finally;
+
+
+
+---
+
+Battery Popup & Scripts: Planned Tweaks
+
+1. Lazy Mode
+
+Already scripted as lazy-toggle.sh.
+
+Confirmation prompt before running.
+
+Toggle style •- / -•.
+
+
+
+2. Turbo Mode
+
+Script turbo-toggle.sh detects Intel Turbo, caches current state in /tmp/eww/turbo_state.
+
+Toggle only flips between cached on/off.
+
+Toggle style •- / -•.
+
+
+
+3. CPU Governor & Tuned Profile
+
+Sliders send values to set-cpu-governor.sh and set-tuned.sh.
+
+Values read from system at start and dynamically updated via polling.
+
+
+
+4. Wi-Fi Popup
+
+Show list of visible Wi-Fi networks.
+
+Optimisation:
+
+If toggle is OFF, don’t show the currently connected network.
+
+If ON, list updates normally.
+
+
+Toggle style •- / -•.
+
+
+
+5. Bluetooth Popup
+
+Show list of detected devices.
+
+Connect/disconnect via buttons (or future scripts).
+
+Toggle style •- / -•.
+
+
+
+6. Icons
+
+Implement after the popups are functional.
+
+Each slider, toggle, and list item will have a small icon on left.
+
+Ensures visual clarity without interfering with logic.
+
+
+
+
+
+---
+
+Script placeholders to save
+
+lazy-toggle.sh → Lazy Mode toggle.
+
+set-cpu-governor.sh → Adjust CPU governor.
+
+set-tuned.sh → Adjust Tuned profile.
+
+turbo-toggle.sh → Toggle Turbo Mode.
+
+wifi-scan.sh → Detect networks (used in popup).
+
+bluetooth-scan.sh → Detect Bluetooth devices.
+
+
+
+---
+
+When you return, you can continue from:
+
+Wiring sliders to scripts,
+
+Finalising toggle logic,
+
+Adding Wi-Fi/Bluetooth lists,
+
+Then adding icons.
+
+
+
+---
+

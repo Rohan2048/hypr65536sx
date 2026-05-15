@@ -1,0 +1,5 @@
+THE ONLY COMMAND THAT WORKS IF YOU WANNA ASSIGN IMAGES AS ICONS:
+
+(image :path "/home/rohan/.config/icons/bell.png" :width 16 :height 16))
+
+(Yes you need to assign the full path and only full path since this was done on eww 0.6.0)

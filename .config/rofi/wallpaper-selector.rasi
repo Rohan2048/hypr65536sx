@@ -1,0 +1,81 @@
+* {
+    background-color: transparent;
+    text-color: #ffffff;
+}
+
+window {
+    width: 670px;
+    height: 410px;
+    padding: 0px;
+    border: 1px;
+    border-color: rgba(255,255,255,0.15);
+    border-radius: 12px;
+    background-color: rgba(10,10,10,0.45);
+}
+
+mainbox {
+    padding: 8px;
+    children: [ inputbar, message, listview ];
+    background-color: transparent;
+}
+
+inputbar {
+    enabled: false;
+    padding: 8px 12px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    background-color: rgba(255,255,255,0.08);
+    border: 1px;
+    border-color: rgba(255,255,255,0.12);
+}
+
+message {
+    padding: 6px 12px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    background-color: rgba(255,255,255,0.06);
+    text-color: rgba(255,255,255,0.7);
+}
+
+textbox {
+    background-color: transparent;
+    text-color: rgba(255,255,255,0.7);
+    font: "monospace 9";
+    horizontal-align: 0.5;
+}
+
+listview {
+    columns: 3;
+    lines: 3;
+    scrollbar: false;
+    fixed-height: true;
+    background-color: transparent;
+}
+
+element {
+    orientation: vertical;
+    padding: 4px;
+    border-radius: 8px;
+    background-color: transparent;
+}
+
+element selected {
+    background-color: rgba(255,255,255,0.12);
+    border: 1px;
+    border-color: rgba(255,255,255,0.25);
+}
+
+element-icon {
+    size: 120px;
+    horizontal-align: 0.5;
+    background-color: transparent;
+}
+
+element-text {
+    enabled : false;
+    horizontal-align: 0.5;
+    padding: 4px 0px;
+    font: "Satoshi Variable 8";
+    background-color: transparent;
+    text-color: rgba(255,255,255,0.85);
+}

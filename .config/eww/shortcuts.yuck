@@ -1,0 +1,40 @@
+;; ============================================================
+;; shortcuts.yuck — Sidebar app launcher
+;; ============================================================
+
+(defvar SHORTCUT_MENU_OPEN false)
+
+(deflisten SHORTCUTS :initial "[]"
+  "bash ~/.config/eww/shortcuts-list.sh")
+
+(defwidget shortcuts-widget []
+  (box :orientation "v"
+       :halign "center"
+       :valign "center"
+       :space-evenly false
+       :spacing 8
+       :class "shortcuts-box"
+
+    (for app in SHORTCUTS
+      (button
+        :onclick "bash ~/.config/eww/shortcuts-launch.sh '${app.exec}' && eww close shortcuts-window &"
+        :onmiddleclick "bash ~/.config/eww/shortcuts-remove.sh '${app.id}' &"
+        :class "shortcut-btn"
+        :tooltip "${app.name}"
+        (image :path "${app.icon}"
+               :width 36
+               :height 36)))
+
+    (button
+      :visible {arraylength(SHORTCUTS) < 10}
+      :onclick "bash ~/.config/eww/shortcuts-add.sh &"
+      :class "shortcut-add-btn"
+      (label :text "+" :class "shortcut-add-label"))))
+
+(defwindow shortcuts-window
+  :monitor 0
+  :namespace "shortcuts-window"
+  :geometry (geometry :x "0px" :y "0px" :width "52px" :anchor "center left")
+  :exclusive false
+  :focusable false
+  (shortcuts-widget))

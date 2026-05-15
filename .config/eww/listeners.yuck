@@ -1,0 +1,91 @@
+;; ============================================================
+;; listeners.yuck — All event-driven variable declarations
+;; ============================================================
+
+
+;; --------------------------
+;; VOLUME  (event-driven via pactl subscribe)
+;; Emits JSON: {volume, muted, sink, sinks, label}
+;; --------------------------
+
+(deflisten VOLUME_STATE :initial "{\"volume\":0,\"muted\":false,\"sink\":\"\",\"sinks\":[],\"label\":\"\"}"
+  "bash ~/.config/eww/volume-listener.sh")
+
+
+;; --------------------------
+;; BRIGHTNESS  (poll — no event source exists)
+;; --------------------------
+
+(defpoll BRIGHTNESS :interval "30s"
+  "brightnessctl -m | awk -F, '{gsub(/%/,\"\",$4); print $4}'")
+
+
+;; --------------------------
+;; WIFI  (event-driven via nmcli monitor)
+;; Emits JSON: {ssid, history}
+;; --------------------------
+
+(deflisten WIFI_STATE :initial "{\"ssid\":\"Disconnected\",\"history\":[]}"
+  "bash ~/.config/eww/wifi-history.sh")
+
+
+;; --------------------------
+;; BLUETOOTH  (event-driven via D-Bus)
+;; Emits JSON: {device, history}
+;; --------------------------
+
+(deflisten BT_STATE :initial "{\"device\":\"Bluetooth-OFF\",\"history\":[]}"
+  "bash ~/.config/eww/bt-history.sh")
+
+
+;; --------------------------
+;; NOTIFICATIONS  (event-driven via dunst dbus signal)
+;; --------------------------
+
+(deflisten NOTIF_LIST :initial "[\"No notifications\"]"
+  "bash ~/.config/eww/notif-listener.sh")
+
+
+;; --------------------------
+;; MUSIC  (event-driven via player-daemon.py)
+;; --------------------------
+
+(deflisten PLAYER_STATUS :initial "Stopped"
+  "playerctl --follow status 2>/dev/null || echo Stopped")
+
+(deflisten PLAYER_TITLE :initial ""
+  "playerctl --follow metadata --format '{{title}}' 2>/dev/null || echo ''")
+
+(deflisten PLAYER_META :initial "{\"title\":\"\",\"artist\":\"\",\"album\":\"\",\"art\":\"\",\"duration\":0,\"duration_fmt\":\"00:00\"}"
+  "bash ~/.config/eww/player-meta.sh")
+
+
+;; --------------------------
+;; CPU / POWER  (event-driven via trigger files)
+;; --------------------------
+
+(deflisten CPU_GOVERNOR :initial "unknown"
+  "cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor 2>/dev/null || echo 'unknown'
+   mkdir -p /tmp/eww && touch /tmp/eww/cpu_governor_trigger
+   tail -f /tmp/eww/cpu_governor_trigger 2>/dev/null")
+
+(deflisten TUNED_PROFILE :initial "unknown"
+  "tuned-adm active 2>/dev/null | awk '/Current active profile:/{print $NF}' || echo 'unknown'
+   mkdir -p /tmp/eww && touch /tmp/eww/tuned_profile_trigger
+   tail -f /tmp/eww/tuned_profile_trigger 2>/dev/null")
+
+;; TURBO_MODE — event-driven via trigger file written by turbo-toggle.sh
+;; No longer polled every 5s
+
+(deflisten TURBO_MODE :initial "OFF"
+  "bash ~/.config/eww/turbo-status.sh
+   mkdir -p /tmp/eww && touch /tmp/eww/turbo_state_trigger
+   tail -f /tmp/eww/turbo_state_trigger 2>/dev/null")
+
+;; LAZY_MODE — event-driven via trigger file written by lazy-toggle.sh
+;; No longer polled every 10s
+
+(deflisten LAZY_MODE :initial "OFF"
+  "cat /tmp/eww/lazy_mode_state 2>/dev/null || echo OFF
+   mkdir -p /tmp/eww && touch /tmp/eww/lazy_mode_trigger
+   tail -f /tmp/eww/lazy_mode_trigger 2>/dev/null")

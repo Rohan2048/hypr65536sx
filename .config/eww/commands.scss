@@ -1,0 +1,98 @@
+
+window.commands-window > * {
+    background-color: transparent;
+}
+
+.commands-box {
+    padding: 2px 4px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 12px 0 0 12px;
+    border: 1px solid $color8;
+    min-width: 200px;
+}
+
+.cmd-header-bar {
+    padding: 4px 6px 8px 6px;
+    border-bottom: 1px solid $color8;
+}
+
+.cmd-title {
+    font-size: 12px;
+    font-weight: bold;
+    color: $foreground;
+    font-family: "Satoshi Variable";
+}
+
+.cmd-add-btn {
+    background: transparent;
+    border: none;
+    outline: none;
+    border-radius: 10px;
+    min-width: 30px;
+    min-height: 20px;
+    padding: 0;
+    -GtkButton-inner-border: 0;
+
+    &:hover {
+        outline: 1px solid $color1;
+        outline-offset: -1px;
+        background: rgba(255, 255, 255, 0.06);
+    }
+
+}
+
+.cmd-add-label {
+    font-size: 28px;
+    color: $color8;
+    font-family: "Satoshi Variable";
+    margin-right: -3px;
+    margin-bottom:-3px;
+    padding: 0;
+}
+
+.cmd-group-header {
+    background: transparent;
+    border: none;
+    outline: none;
+    border-radius: 10px;
+    padding: 4px;
+    min-height: 4px;
+    transition: all 0.15s ease;
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.08);
+        outline: 1px solid $color1;
+        outline-offset: 2px;
+    }
+
+    &:active { background: rgba(255, 255, 255, 0.15); }
+}
+
+.cmd-arrow { font-size: 9px; color: $color8; font-family: "Satoshi Variable"; }
+.cmd-group-label { font-size: 11px; font-weight: bold; color: $foreground; font-family: "Satoshi Variable"; }
+.cmd-list { padding: 4px 0px 4px 12px; }
+
+.cmd-btn {
+    background: transparent;
+    border: none;
+    outline: none;
+    border-radius: 10px;
+    padding: 4px;
+    min-height: 4px;
+    transition: all 0.15s ease;
+
+    &:hover {
+        background: rgba(255, 255, 255, 0.08);
+        outline: 1px solid $color1;
+        outline-offset: 2px;
+    }
+
+    &:active { background: rgba(255, 255, 255, 0.15); }
+}
+
+.cmd-label { font-size: 10px; color: $foreground; font-family: "Satoshi Variable"; }
+.cmd-type-label { font-size: 8px; color: $color8; font-family: "Satoshi Variable"; }
+
+.cmd-list { min-height: 0; }
+.cmd-list-open { min-height: 0px; }
+

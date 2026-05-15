@@ -1,0 +1,206 @@
+
+;; ============================================================
+;; calendar.yuck — Calendar popup
+;; ============================================================
+
+(defvar CAL_OPEN false)
+(defvar CAL_VIEW "month")
+(defvar CAL_DETAIL_READY true)
+(defvar CAL_DETAIL_SCRIPT "~/.config/eww/cal-detail.sh")
+(defvar CAL_SELECTED '{"date":0,"weekday":0,"today":false,"has_event":false,"has_holiday":false,"holiday_name":"","events":[],"filler":true}')
+
+(deflisten CAL_DATA
+  :initial '{"year":0,"month":0,"month_name":"","today_day":-1,"week0":[],"week1":[],"week2":[],"week3":[],"week4":[],"week5":[],"prev":{},"next":{}}'
+  "mkdir -p /tmp/eww && echo '' > /tmp/eww/cal_trigger && python3 ~/.config/eww/calendar.sh
+  inotifywait -q -m -e close_write /tmp/eww/cal_trigger | while read -r _; do
+    python3 ~/.config/eww/calendar.sh \"$(cat /tmp/eww/cal_trigger)\"
+  done")
+
+
+
+(defwidget calendar-root []
+  (box :class "cal-root"
+       :orientation "v"
+       :spacing 4
+       :space-evenly false
+       :halign "fill"
+       :hexpand true
+    (box :visible {CAL_VIEW == "month"}
+         :orientation "v"
+         :spacing 4
+         :space-evenly false
+      (calendar-header)
+      (calendar-grid)
+      (calendar-legend))
+    (box :visible {CAL_VIEW == "detail"}
+         :orientation "v"
+         :spacing 4
+         :space-evenly false
+      (calendar-detail))))
+
+;; ── Month view ────────────────────────────────────────────────────────────
+
+(defwidget calendar-header []
+  (box :class "cal-header"
+       :orientation "h"
+       :halign "fill"
+       :space-evenly false
+    (button :class "cal-nav-btn"
+            :tooltip "Previous month"
+            :onclick "echo '${CAL_DATA.prev.year} ${CAL_DATA.prev.month}' > /tmp/eww/cal_trigger"
+      "<")
+    (box :orientation "v"
+         :halign "center"
+         :hexpand true
+         :spacing 2
+         :space-evenly false
+      (box :orientation "h"
+           :halign "center"
+           :spacing 6
+           :space-evenly false
+        (button :class "cal-refresh-btn"
+                :tooltip "Refresh calendar"
+                :onclick "nohup bash -c 'DATA=$(python3 ~/.config/eww/calendar.sh --refresh) && /usr/bin/eww update \"CAL_DATA=$DATA\"' &"
+          "⟳")
+        (label :class "cal-month-label"
+               :text "${CAL_DATA.month_name} ${CAL_DATA.year}"))
+      (box :halign "center"
+           :hexpand false
+        (button :class "cal-today-btn"
+                :tooltip "Jump to today"
+                :onclick "echo '' > /tmp/eww/cal_trigger"
+          "Today")))
+    (button :class "cal-nav-btn"
+            :tooltip "Next month"
+            :onclick "echo '${CAL_DATA.next.year} ${CAL_DATA.next.month}' > /tmp/eww/cal_trigger"
+      ">")))
+
+(defwidget calendar-grid []
+  (box :class "cal-grid"
+       :orientation "v"
+       :spacing 4
+       :space-evenly false
+       :hexpand true
+       :halign "fill"
+    (box :orientation "h" :space-evenly true :hexpand true :halign "fill"
+      (box :class "cal-cell" :hexpand true :halign "center" :valign "center" (label :class "cal-wd"     :text "Mon"))
+      (box :class "cal-cell" :hexpand true :halign "center" :valign "center" (label :class "cal-wd"     :text "Tue"))
+      (box :class "cal-cell" :hexpand true :halign "center" :valign "center" (label :class "cal-wd"     :text "Wed"))
+      (box :class "cal-cell" :hexpand true :halign "center" :valign "center" (label :class "cal-wd"     :text "Thu"))
+      (box :class "cal-cell" :hexpand true :halign "center" :valign "center" (label :class "cal-wd"     :text "Fri"))
+      (box :class "cal-cell" :hexpand true :halign "center" :valign "center" (label :class "cal-wd sat" :text "Sat"))
+      (box :class "cal-cell" :hexpand true :halign "center" :valign "center" (label :class "cal-wd sun" :text "Sun")))
+    (box :class "cal-week" :orientation "h" :space-evenly true :hexpand true :halign "fill"
+      (for day in {CAL_DATA.week0} (calendar-day :day day)))
+    (box :class "cal-week" :orientation "h" :space-evenly true :hexpand true :halign "fill"
+      (for day in {CAL_DATA.week1} (calendar-day :day day)))
+    (box :class "cal-week" :orientation "h" :space-evenly true :hexpand true :halign "fill"
+      (for day in {CAL_DATA.week2} (calendar-day :day day)))
+    (box :class "cal-week" :orientation "h" :space-evenly true :hexpand true :halign "fill"
+      (for day in {CAL_DATA.week3} (calendar-day :day day)))
+    (box :class "cal-week" :orientation "h" :space-evenly true :hexpand true :halign "fill"
+      (for day in {CAL_DATA.week4} (calendar-day :day day)))
+    (box :class "cal-week" :orientation "h" :space-evenly true :hexpand true :halign "fill"
+      (for day in {CAL_DATA.week5} (calendar-day :day day)))))
+
+(defwidget calendar-day [day]
+  (box :class "cal-cell"
+       :hexpand true
+       :halign "center"
+       :valign "center"
+    (button
+      :halign "center"
+      :valign "center"
+      :class {
+        day.filler       ? "cal-day filler"  :
+        day.today        ? "cal-day today"   :
+        day.has_holiday  ? "cal-day holiday" :
+        day.weekday == 6 ? "cal-day sun-day" :
+        day.weekday == 5 ? "cal-day sat-day" :
+        "cal-day"
+      }
+      :tooltip {
+        day.filler ? "" :
+        day.has_holiday && day.has_event ?
+          "${day.holiday_name} · ${day.events[0]}" :
+        day.has_holiday ? day.holiday_name :
+        day.has_event   ? day.events[0] : ""
+      }
+      :onclick {
+        day.filler ? "" :
+        (day.has_event || day.has_holiday) ?
+          "eww update CAL_SELECTED='${day}' && nohup bash ${CAL_DETAIL_SCRIPT} '${day}' &" :
+        ""
+      }
+      (box :orientation "v"
+           :halign "center"
+           :valign "center"
+           :spacing 1
+           :space-evenly false
+        (label :class "cal-day-num"
+               :xalign 0.5
+               :text {day.filler ? "" : "${day.date}"})
+        (box :class "cal-dots"
+             :orientation "h"
+             :halign "center"
+             :spacing 2
+             :space-evenly false
+          (box :class {day.filler ? "cal-dot hidden" : day.has_event   ? "cal-dot event"   : "cal-dot hidden"})
+          (box :class {day.filler ? "cal-dot hidden" : day.has_holiday ? "cal-dot holiday" : "cal-dot hidden"}))))))
+
+
+(defwidget calendar-legend []
+  (box :class "cal-legend"
+       :orientation "h"
+       :halign "center"
+       :spacing 14
+       :space-evenly false
+    (box :orientation "v" :spacing 2 :space-evenly false :halign "center"
+      (label :class "cal-legend-lbl" :text "Event")
+      (label :class "cal-legend-dot event" :text "●"))
+    (box :orientation "v" :spacing 2 :space-evenly false :halign "center"
+      (label :class "cal-legend-lbl" :text "Holiday")
+      (label :class "cal-legend-dot holiday" :text "●"))))
+
+;; ── Detail view ───────────────────────────────────────────────────────────
+
+(defwidget calendar-detail []
+  (box :class "cal-detail"
+       :orientation "v"
+       :spacing 10
+       :space-evenly false
+       :halign "fill"
+       :hexpand true
+    (box :orientation "h" :halign "fill" :space-evenly false
+      (button :class "cal-nav-btn"
+              :tooltip "Back to calendar"
+              :onclick "eww update CAL_DETAIL_READY=false && eww update CAL_VIEW='month'"
+        "←")
+      (label :class "cal-month-label"
+             :hexpand true
+             :halign "center"
+             :text "${CAL_DATA.month_name} ${CAL_SELECTED.date}, ${CAL_DATA.year}"))
+    (box :visible {CAL_DETAIL_READY && CAL_SELECTED.has_holiday}
+         :class "cal-detail-block holiday"
+         :orientation "h"
+         :spacing 8
+         :space-evenly false
+         :halign "fill"
+      (label :class "cal-detail-dot holiday" :text "●")
+      (box :orientation "v" :spacing 2 :space-evenly false
+        (label :class "cal-detail-type" :text "Holiday" :xalign 0)
+        (label :class "cal-detail-name" :text "${CAL_SELECTED.holiday_name}" :xalign 0 :wrap true)))
+    (box :visible {CAL_DETAIL_READY && CAL_SELECTED.has_event}
+         :class "cal-detail-block event"
+         :orientation "v"
+         :spacing 6
+         :space-evenly false
+         :halign "fill"
+      (box :orientation "h" :spacing 8 :space-evenly false
+        (label :class "cal-detail-dot event" :text "●")
+        (label :class "cal-detail-type" :text "Events" :xalign 0))
+      (for ev in {CAL_SELECTED.events}
+        (label :class "cal-detail-name"
+               :text "· ${ev}"
+               :xalign 0
+               :wrap true)))))

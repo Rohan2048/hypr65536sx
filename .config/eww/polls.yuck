@@ -1,0 +1,36 @@
+;; ============================================================
+;; polls.yuck — Minimal remaining polls
+;; TURBO_MODE and LAZY_MODE moved to listeners.yuck as deflisten
+;; ============================================================
+
+
+;; --------------------------
+;; TIME / DATE  (poll — no event source exists)
+;; --------------------------
+
+(defpoll TIME :interval "10s"
+  "date '+%H:%M'")
+
+(defpoll DATE :interval "60s"
+  "date '+%a %d %b'")
+
+;; Player position — kept as poll because playerctl emits no position events.
+;; Returns JSON {secs, fmt} used by the seek bar.
+
+(defpoll PLAYER_POSITION_DATA :interval "2s"
+  "bash ~/.config/eww/player-position.sh")
+
+;; --------------------------
+;; SINK LIST  (poll — updates when audio devices change)
+;; --------------------------
+
+(defpoll SINK_LIST :interval "10s"
+  "bash ~/.config/eww/list-sinks.sh")
+
+;; --------------------------
+;; BATTERY  (sysfs poll — no reliable event source for capacity %)
+;; --------------------------
+
+(defpoll BATTERY_STATE :interval "10s"
+  :initial "{\"capacity\":0,\"time\":\"---\",\"icon\":\"VERY_LOW\",\"status\":\"discharging\"}"
+  "bash ~/.config/eww/battery-listener.sh")
